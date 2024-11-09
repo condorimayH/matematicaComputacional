@@ -90,6 +90,8 @@ print(A)
 b = np.random.rand(3,1)
 print("\nMatriz b:")
 print(b)'''
+
+'''
 np.random.seed(0)  # Para reproducibilidad
 A = np.random.uniform(1, 5, (10, 10))
 x_exacta = np.ones((10, 1))  # Solución exacta x = [1, 1, ..., 1]
@@ -127,4 +129,21 @@ resnorma = np.linalg.norm(res,1)
 print("\n Resnorma:",resnorma)
 # Calcular la norma suma del residuo
 #residuo = b- np.dot(A, x4)
-#norma_suma_residuo = np.sum(np.abs(residuo))---
+#norma_suma_residuo = np.sum(np.abs(residuo))-
+
+'''
+#A = np.random.rand(3,3)
+#b = np.random.rand(3,1)
+A = np.array([[12.0, -51.0, 4.0], [6.0, 167.0, -68.0], [-4., 24.0, -41.0]])
+
+print(A)
+#print(b)
+Q = bib.QRdecomposition(A) 
+print(Q)
+
+aux = np.matmul(Q,Q.transpose())-np.eye(3,3)
+print(aux)
+norma = np.linalg.norm(aux)
+print(norma)
+
+

@@ -1,4 +1,8 @@
+
+from turtle import shape
 import numpy as np
+import numpy.polynomial as P
+import scipy.linalg as la
 
 def operacionFila(A,fm,fp,factor): # filafm = filafm - factor*filafp
     A[fm,:] = A[fm,:] - factor*A[fp,:]
@@ -86,3 +90,24 @@ def LUdescomp(A): # A debe ser matriz cuadrada
     return (L,U)
 
 #def LDLtDescomp(A): # A debe ser matriz cuadrada
+
+def projection(u,v): #projection numpy vectors u onto v
+    aux = np.dot(u,v)/np.dot(v,v)
+    return aux*v
+
+def QRdecomposition(A): # Ortonormalize columns of numpy array
+    Q = A.copy()
+    R = np.zeros_like() 
+    
+    N = Q.shape[1]
+    for col in range(N):
+        sum = np.zeros_like(Q[:,col])
+        for j in range(col):
+            sum = sum + projection(Q[:,col],Q[:,j]) 
+        Q[:,col] = Q[:,col] - sum
+
+    for col in range(N):
+        norm = la.norm(Q[:,col],2)
+        Q[:,col] = Q[:,col]/norm 
+    return Q,R 
+
