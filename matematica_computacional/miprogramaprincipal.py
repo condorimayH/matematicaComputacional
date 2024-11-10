@@ -52,9 +52,9 @@ import time
 #print("Solución del sistema:")
 #print(x)
 import numpy as np
-import mibiblioteca1 as bib
+import mibiblioteca as bib
 #import time
-
+'''
 # Paso 1: Generar una matriz aleatoria A y el vector b
 np.random.seed(0)  # Para reproducibilidad
 A = np.random.uniform(-10, 10, (10, 10))
@@ -138,3 +138,62 @@ norma_suma_residuo = np.sum(np.abs(residuo))
 
 print("\nNorma suma del residuo:")
 print(norma_suma_residuo)
+'''
+
+# Ejemplo de uso extraido de  https://es.wikipedia.org/wiki/Factorizaci%C3%B3n_QR
+A = np.array([[12, -51, 4], [6, 167, -68], [-4, 24, -41]])
+Q,R = bib.QRdecomposition(A)
+print("Q:\n", Q)
+print("R:\n", R)
+
+# Comprobación de la ortogonalidad de Q
+aux = np.matmul(Q, Q.transpose()) - np.eye(Q.shape[0])
+print("Auxiliar (Q * Q^T - I):\n", aux)
+norma = np.linalg.norm(aux)
+print("Norma de la matriz auxiliar:", norma)
+
+# Comprobación de R
+A_reconstruida = np.matmul(Q, R)
+print("A reconstruida:\n", A_reconstruida)
+error = np.linalg.norm(A - A_reconstruida)
+print("Error de reconstrucción de A:", error)
+
+
+# Generamos las  matrices aleatorias y verificamos los  resultados
+sizes = [10, 20]
+for size in sizes:
+    A = np.random.rand(size, size)
+    Q, R = bib.QRdecomposition(A)
+
+    # Comprobación de la ortogonalidad de Q
+    aux = np.matmul(Q, Q.transpose()) - np.eye(Q.shape[0])
+    norma = np.linalg.norm(aux)
+    print(f"Norma de la matriz auxiliar para tamaño {size}x{size}: {norma}")
+
+    # Comprobación de R
+    A_reconstruida = np.matmul(Q, R)
+    error = np.linalg.norm(A - A_reconstruida)
+    print(f"Error de reconstrucción de A para tamaño {size}x{size}: {error}")
+    
+ 
+# Generamos la descomposicion de  matrices aleatorias y verificar resultados con qr propia de 
+# Numpy, claro esta es  diferente al trabajado en clase 
+sizes = [10, 20]
+for size in sizes:
+    # Generar una matriz aleatoria de tamaño 'size' x 'size'
+    A = np.random.rand(size, size)
+    # Realizar la descomposición QR utilizando np.linalg.qr
+    Q, R = bib.QRdecomposition1(A)
+
+    # Comprobación de la ortogonalidad de Q
+    aux = np.matmul(Q, Q.T) - np.eye(Q.shape[0])
+    norma = np.linalg.norm(aux)
+    print(f"Norma de la matriz auxiliar para tamaño {size}x{size} (Q * Q^T - I): {norma}")
+
+    # Comprobación de la matriz R
+    # Reconstruir la matriz original A multiplicando Q y R
+    A_reconstruida = np.matmul(Q, R)
+    # Calcular el error de reconstrucción (diferencia entre A y A_reconstruida)
+    error = np.linalg.norm(A - A_reconstruida)
+    print(f"Error de reconstrucción de A para tamaño {size}x{size}: {error}")
+

@@ -26,3 +26,5 @@ def GaussElimSimple(A, b):
     b1 = b1.reshape(b.shape[0], 1)
     x = sustRegresiva(A1, b1)
     return x
+
+
