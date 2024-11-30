@@ -139,7 +139,9 @@ norma_suma_residuo = np.sum(np.abs(residuo))
 print("\nNorma suma del residuo:")
 print(norma_suma_residuo)
 '''
-
+'''
+#############################################################
+# tarea DEScomposiscion QR
 # Ejemplo de uso extraido de  https://es.wikipedia.org/wiki/Factorizaci%C3%B3n_QR
 A = np.array([[12, -51, 4], [6, 167, -68], [-4, 24, -41]])
 Q,R = bib.QRdecomposition(A)
@@ -197,3 +199,162 @@ for size in sizes:
     error = np.linalg.norm(A - A_reconstruida)
     print(f"Error de reconstrucción de A para tamaño {size}x{size}: {error}")
 
+''' 
+
+'''
+# Definir parámetros del modelo real
+x = np.linspace(-1, 1, 100)  # Intervalo sobre el cual efectuamos el experimento
+a, b, c = 1, 2, 150
+y_exact = a + b * x + c * x**2
+
+# Simular datos con ruido
+m = 20
+X = 1 - 2 * np.random.rand(m)
+Y = a + b * X + c * X**2 + 2 * np.random.randn(m)
+
+# Construcción explícita de la matriz A usando arrays de numpy
+A = np.array([np.ones(m), X, X**2]).T
+print("Matriz A:\n", A)
+
+# Calcular la matriz A^T A y el vector A^T Y
+AtA = np.dot(A.T, A)
+AtY = np.dot(A.T, Y)
+
+print("Matriz A^T A:\n", AtA)
+print("Vector A^T Y:\n", AtY)
+
+# Resolver el sistema usando np.linalg.solve
+#sol = np.linalg.solve(AtA, AtY)
+#print("Solución (coeficientes del polinomio):", sol)
+
+
+# Resolver el sistema usando eliminación Gaussiana con pivoteo parcial
+b_columna = AtY.reshape(-1, 1)  # Asegurarse de que b sea una columna
+sol = bib.GaussElimPiv(AtA, b_columna)
+
+print("Solución (coeficientes del polinomio):", sol.flatten())
+
+# Evaluar el polinomio ajustado
+y_fit = sol[0] + sol[1] * x + sol[2] * x**2
+
+# Graficar los resultados
+fig, ax = plt.subplots(figsize=(12, 4))
+ax.plot(X, Y, 'go', alpha=0.5, label='Datos simulados')
+ax.plot(x, y_exact, 'r', lw=2, label='Valor real $y = 1 + 2x + 150x^2$')
+ax.plot(x, y_fit, 'b', lw=2, label=f'Ajuste de mínimos cuadrados $y = {sol[0][0]:.2f} + {sol[1][0]:.2f}x + {sol[2][0]:.2f}x^2$')
+ax.set_xlabel(r"$x$", fontsize=18)
+ax.set_ylabel(r"$y$", fontsize=18)
+ax.legend(loc=2)
+plt.show()
+
+'''
+
+'''
+############################################################# 
+import numpy as np
+import matplotlib.pyplot as plt
+import mibiblioteca as bib
+# TAREA E MINIMOS CUADRADOS
+# Paso 1: Definir parámetros del modelo real
+# Generamos 100 puntos igualmente espaciados en el intervalo [-1, 1]
+x = np.linspace(-1, 1, 100)  
+
+# Coeficientes del polinomio real
+a, b, c = 1, 2, 150  
+
+# Evaluamos el polinomio exacto usando los coeficientes
+y_real = a + b * x + c * x**2
+
+# Paso 2: Simular datos con ruido
+# Número de datos simulados
+m = 20  
+# Generamos datos X aleatorios en el intervalo [-1, 1]
+X = 1 - 2 * np.random.rand(m)  
+
+# Calculamos Y usando el polinomio real y añadiendo ruido aleatorio
+Y = a + b * X + c * X**2 + 2 * np.random.randn(m)
+# Paso 3: Construcción explícita de la matriz A usando arrays de numpy
+# Matriz A con términos constantes, lineales y cuadráticos
+A = np.array([np.ones(m), X, X**2]).T  
+print("Matriz A:\n", A)
+
+# Paso 4: Calcular la matriz A^T A y el vector A^T Y
+AtA = np.dot(A.T, A)
+AtY = np.dot(A.T, Y)
+print("Matriz A^T A:\n", AtA)
+print("Vector A^T Y:\n", AtY)
+
+# Paso 5: Resolver el sistema usando eliminación Gaussiana con pivoteo parcial
+
+# Asegurarse de que AtY sea una columna
+b_columna = AtY.reshape(-1, 1)  
+
+# Utilizamos una función personalizada GaussElimPiv para resolver el sistema
+sol = bib.GaussElimPiv(AtA, b_columna)
+print("Solución (coeficientes del polinomio):", sol.flatten())
+
+# Paso 6: Evaluar el polinomio ajustado
+# Calculamos los valores ajustados del polinomio
+y_ajustado = sol[0] + sol[1] * x + sol[2] * x**2
+# Paso 7: Graficar los resultados
+fig, ax = plt.subplots(figsize=(12, 4))
+# Graficar los datos simulados con ruido (puntos verdes)
+ax.plot(X, Y, 'go', alpha=0.5, label='Datos simulados')
+# Graficar el polinomio real (línea roja)
+ax.plot(x, y_real, 'r', lw=2, label='Valor real $y = 1 + 2x + 150x^2$')
+# Graficar el polinomio ajustado por mínimos cuadrados (línea azul)
+ax.plot(x, y_ajustado, 'b', lw=2,
+label=f'Ajuste de mínimos cuadrados $y = {sol[0][0]:.2f} + {sol[1][0]:.2f}x + {sol[2][0]:.2f}x^2$')
+# Etiquetas de los ejes
+ax.set_xlabel(r"$x$", fontsize=18)
+ax.set_ylabel(r"$y$", fontsize=18)
+# Mostrar la leyenda
+ax.legend(loc=2)
+# Mostrar el gráfico
+plt.title('AJUSTE POR MINIMOS CUADRADOS EN MODELOS: Y = a + bX + cX²')
+plt.show()
+'''
+# Ejemplo de uso para DESCOMPOSICION PLU
+
+A = np.array([[0, -1, 4], [2, 1, 1], [1, 1, -2]], dtype=float)
+b = np.array([[5], [-2], [9]], dtype=float)
+# Descomposición y solución
+
+P, L, U = bib.PLU_decomposicion(A)
+print("Matriz P:") 
+print(P) 
+print("Matriz L:") 
+print(L)
+print("Matriz U:") 
+print(U)
+
+
+P, L, U, x = bib.PLU_solucion(A, b) 
+print("Solución del sistema AX = b:", x)
+
+def comprobar_PLU(A, P, L, U):
+    # Comprueba si PA = LU
+    PA = np.dot(P, A)  # Calculamos P*A
+    LU = np.dot(L, U)  # Calculamos L*U
+    print("Matriz PA:")
+    print(PA)  # Mostramos PA
+    print("Matriz LU:")
+    print(LU)  # Mostramos LU
+    return np.allclose(PA, LU)  # Verificamos si PA es aproximadamente igual a LU
+
+def comprobar_solucion(A, x, b):
+    # Comprueba si Ax = b
+    Ax = np.dot(A, x)  # Calculamos A*x
+    print("Ax calculado:")
+    print(Ax)  # Mostramos A*x
+    print("b original:")
+    print(b)  # Mostramos b original
+    return np.allclose(Ax, b)  # Verificamos si A*x es aproximadamente igual a b
+
+# Verificación de la descomposición PLU
+es_PLU_correcto = comprobar_PLU(A, P, L, U)
+print("¿PA = LU? ", es_PLU_correcto)
+
+# Verificación de la solución del sistema
+es_solucion_correcta = comprobar_solucion(A, x, b)
+print("¿AX = b? ", es_solucion_correcta)

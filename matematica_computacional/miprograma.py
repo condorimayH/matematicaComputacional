@@ -3,7 +3,7 @@ import mibiblioteca as bib
 import time
 from tabulate import tabulate
 from fpdf import FPDF
-
+'''
 # Generar una matriz aleatoria A y el vector b
 np.random.seed(0)  # Para reproducibilidad
 A = np.random.uniform(-10, 10, (10, 10))
@@ -60,3 +60,48 @@ pdf.cell(200, 10, txt=str(norma_suma_residuo), ln=True)
 pdf.output("resultados.pdf")
 
 print("PDF generado con éxito: resultados.pdf")
+'''
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Definir parámetros del modelo real
+x = np.linspace(-1, 1, 100)  # Intervalo sobre el cual efectuamos el experimento
+a, b, c = 1, 2, 150
+y_exact = a + b * x + c * x**2
+
+# Simular datos con ruido
+m = 20
+X = 1 - 2 * np.random.rand(m)
+Y = a + b * X + c * X**2 + 2 * np.random.randn(m)
+
+# Construcción explícita de la matriz A usando arrays de numpy
+A = np.array([np.ones(m), X, X**2]).T
+print("Matriz A:\n", A)
+
+# Calcular la matriz A^T A y el vector A^T Y
+AtA = np.dot(A.T, A)
+AtY = np.dot(A.T, Y)
+
+print("Matriz A^T A:\n", AtA)
+print("Vector A^T Y:\n", AtY)
+
+# Resolver el sistema usando np.linalg.solve
+sol = np.linalg.solve(AtA, AtY)
+print("Solución (coeficientes del polinomio):", sol)
+
+# Evaluar el polinomio ajustado
+y_fit = sol[0] + sol[1] * x + sol[2] * x**2
+
+# Graficar los resultados
+fig, ax = plt.subplots(figsize=(12, 4))
+
+ax.plot(X, Y, 'go', alpha=0.5, label='Datos simulados')
+ax.plot(x, y_exact, 'r', lw=2, label='Valor real $y = 1 + 2x + 150x^2$')
+ax.plot(x, y_fit, 'b', lw=2, label=f'Ajuste de mínimos cuadrados $y = {sol[0]:.2f} + {sol[1]:.2f}x + {sol[2]:.2f}x^2$')
+ax.set_xlabel(r"$x$", fontsize=18)
+ax.set_ylabel(r"$y$", fontsize=18)
+ax.legend(loc=2)
+plt.show()
+
+
+
