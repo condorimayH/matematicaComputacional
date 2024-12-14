@@ -97,8 +97,7 @@ def projection(u,v): #projection numpy vectors u onto v
 
 def QRdecomposition(A): # Ortonormalize columns of numpy array
     Q = A.copy()
-    R = np.zeros_like() 
-    
+    R = np.zeros_like(Q,dtype=float) 
     N = Q.shape[1]
     for col in range(N):
         sum = np.zeros_like(Q[:,col])
@@ -109,5 +108,11 @@ def QRdecomposition(A): # Ortonormalize columns of numpy array
     for col in range(N):
         norm = la.norm(Q[:,col],2)
         Q[:,col] = Q[:,col]/norm 
-    return Q,R 
+
+    for col in range(N):
+        for row in range(col+1):
+            R[row,col] = np.dot(Q[:,row],A[:,col])
+    return Q,R
+
+
 
